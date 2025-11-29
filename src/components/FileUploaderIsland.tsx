@@ -1,10 +1,20 @@
-import { createSignal } from 'solid-js';
+import { createSignal, createEffect } from 'solid-js';
 
 export default function FileUploaderIsland() {
   const [file, setFile] = createSignal<File | null>(null);
   const [status, setStatus] = createSignal<string>('No file selected, xxx');
   const [fileContents, setFileContents] = createSignal<string | null>(null);
   const [fileMetaData, setFileMetaData] = createSignal<{ name?: string; size?: number; type?: string } | null>(null);
+
+  // Log fileMetaData whenever it changes
+  createEffect(() => {
+    const meta = fileMetaData();
+    if (meta) {
+      console.log('fileMetaData changed:', meta);
+    } else {
+      console.log('fileMetaData cleared');
+    }
+  });
 
   function readUploadedFileContents() {
     const currentFile = file();
