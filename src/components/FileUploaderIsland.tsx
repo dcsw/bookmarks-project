@@ -4,6 +4,7 @@ export default function FileUploaderIsland() {
   const [file, setFile] = createSignal<File | null>(null);
   const [status, setStatus] = createSignal<string>('No file selected, xxx');
   const [fileContents, setFileContents] = createSignal<string | null>(null);
+  const [fileMetaData, setFileMetaData] = createSignal<{ name?: string; size?: number; type?: string } | null>(null);
 
   function readUploadedFileContents() {
     const currentFile = file();
@@ -25,9 +26,15 @@ export default function FileUploaderIsland() {
     if (target.files && target.files.length > 0) {
       const selectedFile = target.files[0];
       setFile(selectedFile);
+      setFileMetaData({
+        name: selectedFile.name,
+        size: selectedFile.size,
+        type: selectedFile.type,
+      });
       setStatus(`Selected: ${selectedFile.name}`);
     } else {
       setFile(null);
+      setFileMetaData(null);
       setStatus('No file selected, dork');
     }
   }
