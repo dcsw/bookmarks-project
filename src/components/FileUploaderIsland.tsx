@@ -49,16 +49,35 @@ export default function FileUploaderIsland() {
     }
   }
 
-  function handleUpload() {
+  async function handleUpload() {
     if (!file()) {
       setStatus('Please select a file first.');
       return;
     }
     setStatus(`Uploading ${file()!.name}...`);
     readUploadedFileContents();
-    setTimeout(() => {
+
+    // Prepare form data for upload
+    const formData = new FormData();
+    formData.append('file', file()!);
+
+    try {
+      const response = await fetch('/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Upload failed with status ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log('Upload response:', result);
       setStatus(`Upload complete: ${file()!.name}`);
-    }, 1000);
+    } catch (error) {
+      console.error('Upload error:', error);
+      setStatus(`Upload failed: ${error}`);
+    }
   }
 
   return (
