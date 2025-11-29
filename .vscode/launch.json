@@ -53,6 +53,14 @@
         "Astro Dev Server",
         "Launch Chrome (Astro)"
       ]
+    },
+    {
+      "name": "Full Debug",
+      "configurations": [
+        "Astro Dev Server",
+        "Launch Chrome (Astro)",
+        "Backend"
+      ]
     }
   ]
 }
