@@ -5,8 +5,16 @@ export default function FileUploaderIsland() {
   const [status, setStatus] = createSignal<string>('No file selected, xxx');
 
   function nop() {
-    console.log("Fish Fart");
-    return;
+    const currentFile = file();
+    if (!currentFile) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      console.log(reader.result);
+    };
+    reader.onerror = () => {
+      console.error('Error reading file');
+    };
+    reader.readAsText(currentFile);
   }
 
   function handleFileChange(event: Event) {
