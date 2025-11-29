@@ -5,7 +5,7 @@ export default function FileUploaderIsland() {
   const [status, setStatus] = createSignal<string>('No file selected, xxx');
   const [fileContents, setFileContents] = createSignal<string | null>(null);
 
-  function nop() {
+  function readUploadedFileContents() {
     const currentFile = file();
     if (!currentFile) return;
     const reader = new FileReader();
@@ -26,7 +26,6 @@ export default function FileUploaderIsland() {
       const selectedFile = target.files[0];
       setFile(selectedFile);
       setStatus(`Selected: ${selectedFile.name}`);
-      nop();
     } else {
       setFile(null);
       setStatus('No file selected, dork');
@@ -39,6 +38,7 @@ export default function FileUploaderIsland() {
       return;
     }
     setStatus(`Uploading ${file()!.name}...`);
+    readUploadedFileContents();
     setTimeout(() => {
       setStatus(`Upload complete: ${file()!.name}`);
     }, 1000);
