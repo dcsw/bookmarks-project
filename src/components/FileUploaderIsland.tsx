@@ -1,0 +1,56 @@
+import { createSignal } from 'solid-js';
+
+export default function FileUploaderIsland() {
+  const [file, setFile] = createSignal<File | null>(null);
+  const [status, setStatus] = createSignal<string>('No file selected, xxx');
+
+  function nop() {
+    console.log("Fish Fart");
+    return;
+  }
+
+  function handleFileChange(event: Event) {
+    const target = event.target as HTMLInputElement;
+    if (target.files && target.files.length > 0) {
+      const selectedFile = target.files[0];
+      setFile(selectedFile);
+      setStatus(`Selected: ${selectedFile.name}`);
+      nop();
+    } else {
+      setFile(null);
+      setStatus('No file selected, dork');
+    }
+  }
+
+  function handleUpload() {
+    if (!file()) {
+      setStatus('Please select a file first.');
+      return;
+    }
+    setStatus(`Uploading ${file()!.name}...`);
+    setTimeout(() => {
+      setStatus(`Upload complete: ${file()!.name}`);
+    }, 1000);
+  }
+
+  return (
+    <>
+      <div class="file-uploader">
+        <input type="file" accept="*/*" onChange={handleFileChange} />
+        <button onClick={handleUpload}>Upload</button>
+        <p>{status()}</p>
+      </div>
+      <style>{`
+        .file-uploader {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+          max-width: 300px;
+        }
+        .file-uploader input {
+          margin-bottom: 0.5rem;
+        }
+      `}</style>
+    </>
+  );
+}
