@@ -2,10 +2,45 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "command": "./node_modules/.bin/astro dev",
-      "name": "Development server",
+      "name": "Astro Dev Server",
+      "type": "node",
       "request": "launch",
-      "type": "node-terminal"
+      "runtimeExecutable": "bun", // or "node"
+      "args": [
+        "run",
+        "dev"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
+    },
+    {
+      "name": "Launch Chrome (Astro)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:4321",
+      "webRoot": "${workspaceFolder}/src",
+      "sourceMaps": true,
+      "sourceMapPathOverrides": {
+        "webpack:///./*": "${webRoot}/*",
+        "webpack:////root/code/bkmk-exp/*": "${webRoot}/*",
+        "*": "${webRoot}/*"
+      },
+      "resolveSourceMapLocations": [
+        "${webRoot}/**/*",
+        "!**/node_modules/**"
+      ]
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Astro Full Debug",
+      "configurations": [
+        "Astro Dev Server",
+        "Launch Chrome (Astro)"
+      ]
     }
   ]
 }
