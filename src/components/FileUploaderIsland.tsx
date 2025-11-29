@@ -3,13 +3,16 @@ import { createSignal } from 'solid-js';
 export default function FileUploaderIsland() {
   const [file, setFile] = createSignal<File | null>(null);
   const [status, setStatus] = createSignal<string>('No file selected, xxx');
+  const [fileContents, setFileContents] = createSignal<string | null>(null);
 
   function nop() {
     const currentFile = file();
     if (!currentFile) return;
     const reader = new FileReader();
     reader.onload = () => {
-      console.log(reader.result);
+      const result = reader.result as string;
+      setFileContents(result);
+      console.log(result);
     };
     reader.onerror = () => {
       console.error('Error reading file');
