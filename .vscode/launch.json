@@ -5,7 +5,7 @@
       "name": "Astro Dev Server",
       "type": "node",
       "request": "launch",
-      "runtimeExecutable": "bun", // or "node"
+      "runtimeExecutable": "bun",
       "args": [
         "run",
         "dev"
@@ -32,6 +32,18 @@
         "${webRoot}/**/*",
         "!**/node_modules/**"
       ]
+    },
+    {
+      "name": "Backend",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/backend/main.py",
+      "cwd": "${workspaceFolder}/backend",
+      "console": "integratedTerminal",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/backend"
+      },
+      "justMyCode": true
     }
   ],
   "compounds": [
