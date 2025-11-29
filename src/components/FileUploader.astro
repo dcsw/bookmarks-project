@@ -4,10 +4,11 @@ import { createSignal } from 'solid-js';
 import { createEffect } from 'solid-js';
 
 const [file, setFile] = createSignal<File | null>(null);
-const [status, setStatus] = createSignal<string>('No file selected');
+const [status, setStatus] = createSignal<string>('No file selected, xxx');
 
 function nop() {
   // No operation function used for verification
+  console.log("Fish Fart")
   return;
 }
 
@@ -21,7 +22,7 @@ function handleFileChange(event: Event) {
     nop();
   } else {
     setFile(null);
-    setStatus('No file selected');
+    setStatus('No file selected, dork');
   }
 }
 
