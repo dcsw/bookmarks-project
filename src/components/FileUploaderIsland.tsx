@@ -62,7 +62,8 @@ export default function FileUploaderIsland() {
     formData.append('file', file()!);
 
     try {
-      const response = await fetch('/upload', {
+      // Use absolute URL to hit the FastAPI backend running on port 8000
+      const response = await fetch('http://127.0.0.1:8000/upload', {
         method: 'POST',
         body: formData,
       });
