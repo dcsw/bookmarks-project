@@ -1,8 +1,18 @@
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 import logging
 
 app = FastAPI()
+
+# Configure CORS to allow all origins (adjust as needed for production)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],          # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],          # Allows all HTTP methods
+    allow_headers=["*"],          # Allows all headers
+)
 
 logging.basicConfig(level=logging.INFO)
 
