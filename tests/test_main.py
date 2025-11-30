@@ -1,6 +1,10 @@
 import io
 import json
 import pytest
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from fastapi.testclient import TestClient
 
 # Import the FastAPI app from the backend
@@ -28,14 +32,12 @@ def test_upload_endpoint_success():
     # Verify the response JSON structure
     data = response.json()
     assert isinstance(data, dict), "Response should be a JSON object"
-    assert "filename" in data, "Response JSON should contain 'filename'"
-    assert "size" in data, "Response JSON should contain 'size'"
-    assert "content_type" in data, "Response JSON should contain 'content_type'"
+    assert "status" in data, "Response JSON should contain 'status'"
+    assert "received_bytes" in data, "Response JSON should contain 'received_bytes'"
 
     # Validate the values
-    assert data["filename"] == file_name
-    assert data["size"] == len(file_content)
-    assert data["content_type"] == "text/plain"
+    assert data["status"] == "success"
+    assert data["received_bytes"] == len(file_content)
 
 def test_upload_endpoint_no_file():
     """

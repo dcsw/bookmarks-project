@@ -2,7 +2,7 @@ import { createSignal, createEffect } from 'solid-js';
 
 export default function FileUploaderIsland() {
   const [file, setFile] = createSignal<File | null>(null);
-  const [status, setStatus] = createSignal<string>('No file selected, xxx');
+  const [status, setStatus] = createSignal<string>('No file selected.');
   const [fileContents, setFileContents] = createSignal<string | null>(null);
   const [fileMetaData, setFileMetaData] = createSignal<{ name?: string; size?: number; type?: string } | null>(null);
 
