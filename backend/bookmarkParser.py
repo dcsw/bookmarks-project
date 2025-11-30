@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 from typing import List, Dict, Any
+from NetscapeBookmarksFileParser import parse_string
 
 def parse_bookmarks(file_path: str) -> List[Dict[str, Any]]:
     """
