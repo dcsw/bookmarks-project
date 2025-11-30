@@ -24,6 +24,8 @@ async def upload_file(file: UploadFile = File(...)):
     try:
         # Read the uploaded file into bytes
         file_bytes = await file.read()
+        # Decode bytes into a string (assuming UTF-8 encoding)
+        file_text = file_bytes.decode("utf-8")
     except Exception as e:
         logging.error(f"Failed to read uploaded file: {e}")
         raise HTTPException(status_code=400, detail="Invalid file upload")
