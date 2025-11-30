@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import logging
+from netscape_bookmarks_parser import parse_bookmarks
 
 app = FastAPI()
 
@@ -33,10 +34,23 @@ async def upload_file(file: UploadFile = File(...)):
     # Log the received file name and size
     logging.info(f"Received file upload: {file.filename} ({len(file_bytes)} bytes)")
 
-    # Here you could add logic to store the file, process it, etc.
-    # For now, we just acknowledge receipt.
+    # Parse the uploaded file string using netscape-bookmarks-parser
+    try:
+        bookmarks = parse_bookmarks(file_text)
+    except Exception as e:
+        logging.error(f"Failed to parse bookmarks: {e}")
+        raise HTTPException(status_code=400, detail="Failed to parse bookmarks file")
 
-    return JSONResponse(content={"status": "success", "received_bytes": len(file_bytes)})
+    # Here you could add logic to store the file, process it, etc.
+    # For now, we just acknowledge receipt and return the parsed data.
+
+    return JSONResponse(
+        content={
+            "status": "success",
+            "received_bytes": len(file_bytes),
+            "bookmarks": bookmarks,
+        }
+    )
 
 if __name__ == "__main__":
     import uvicorn
