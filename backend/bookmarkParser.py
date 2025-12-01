@@ -1,29 +1,45 @@
 import json
 from pathlib import Path
 from typing import List, Dict, Any
-from NetscapeBookmarksFileParser import parser, NetscapeBookmarksFile
+from NetscapeBookmarksFileParser import parser, NetscapeBookmarksFile, BookmarkFolder, BookmarkShortcut
 
-    
-    # Access the root folder: bookmarks_file.bookmarks
-def flatten_folder(folder):
-    flat_list = []
-    
-    # Add shortcuts (bookmarks) from this folder
-    for shortcut in folder.shortcuts:
-        flat_list.append(shortcut)
-    
-    # Recursively flatten child folders
-    for child_folder in folder.folders:
-        flat_list.extend(flatten_folder(child_folder))
-    
+
+def flatten_folder(folder: BookmarkFolder) -> List[BookmarkShortcut]:
+    """
+    Recursively flatten a BookmarkFolder into a list of BookmarkShortcut objects.
+
+    Parameters
+    ----------
+    folder : BookmarkFolder
+        The folder to flatten.
+
+    Returns
+    -------
+    List[BookmarkShortcut]
+        A flat list of all bookmark shortcuts contained within the folder and its
+        subfolders.
+    """
+    flat_list: List[BookmarkShortcut] = []
+
+    # Iterate over the mixed items array
+    for item in folder.items:
+        if isinstance(item, BookmarkShortcut):
+            flat_list.append(item)
+        elif isinstance(item, BookmarkFolder):
+            flat_list.extend(flatten_folder(item))
+        else:
+            # Unknown item type; ignore or log if needed
+            pass
+
     return flat_list
+
 
 def parse_bookmarks(file_text: str) -> List[Dict[str, Any]]:
     """
     Parse a bookmarks file string and return a list of bookmark entries.
 
     The function expects the input to be a string containing the contents of a
-    Netscape bookmarks file. It uses the `parse_string` function from
+    Netscape bookmarks file. It uses the `parser` from
     `NetscapeBookmarksFileParser` to parse the string into a list of bookmark
     dictionaries. Each bookmark dictionary may contain keys such as
     'title', 'url', and 'tags'.
@@ -35,20 +51,31 @@ def parse_bookmarks(file_text: str) -> List[Dict[str, Any]]:
 
     Returns
     -------
-        ...
+    List[Dict[str, Any]]
+        A list of bookmark dictionaries parsed from the input string.
     """
     netscapeBookmarksFile = NetscapeBookmarksFile(file_text)
-    
+
     # Use the external parser to convert the string into bookmark data
     bookmarks = parser.parse(netscapeBookmarksFile)
 
-    # Ensure the result is a list of dictionaries
+    # Ensure the result is a NetscapeBookmarksFile instance
     if not isinstance(bookmarks, NetscapeBookmarksFile):
         raise ValueError("Parsed bookmarks must be a NetscapeBookmarksFile")
 
+    # Flatten the root folder into a list of shortcuts
+    shortcuts = flatten_folder(bookmarks.bookmarks)
 
-    return flatten_folder(bookmarks.bookmarks)
+    # Convert each BookmarkShortcut to a plain dictionary
+    result: List[Dict[str, Any]] = []
+    for shortcut in shortcuts:
+        result.append({
+            "title": shortcut.title,
+            "url": shortcut.url,
+            "tags": getattr(shortcut, "tags", []),
+        })
 
-    # return bookmarks
+    return result
+
 
 __all__ = ["parse_bookmarks"]
