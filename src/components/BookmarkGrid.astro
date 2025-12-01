@@ -1,0 +1,80 @@
+---
+/**
+ * BookmarkGrid component
+ *
+ * Props:
+ *   - bookmarks: Array of bookmark objects. Each object should contain at least:
+ *       - title: string
+ *       - url: string
+ *       - folder?: string (optional)
+ *
+ * This component renders a flexible CSS‑grid that adapts to the width of the
+ * viewport. Each bookmark is displayed as a card with a link and optional
+ * folder path.
+ */
+export interface Bookmark {
+  title: string;
+  url: string;
+  folder?: string;
+}
+
+export let bookmarks: Bookmark[] = [];
+---
+
+<style>
+  .grid-container {
+    display: grid;
+    gap: 1rem;
+    /* Auto‑fit columns with a minimum width of 200px */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    padding: 1rem;
+  }
+
+  .bookmark-card {
+    background: var(--card-bg, #fff);
+    border: 1px solid var(--card-border, #e0e0e0);
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: transform 0.1s ease-in-out;
+  }
+
+  .bookmark-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .bookmark-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    color: var(--link-color, #1a73e8);
+    text-decoration: none;
+  }
+
+  .bookmark-folder {
+    font-size: 0.85rem;
+    color: var(--folder-color, #666);
+  }
+</style>
+
+{#if bookmarks.length === 0}
+  <p>No bookmarks to display.</p>
+{:else}
+  <div class="grid-container">
+    {#each bookmarks as bookmark}
+      <div class="bookmark-card">
+        <a
+          href={bookmark.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="bookmark-title"
+        >
+          {bookmark.title}
+        </a>
+        {#if bookmark.folder}
+          <div class="bookmark-folder">{bookmark.folder}</div>
+        {/if}
+      </div>
+    {/each}
+  </div>
+{/if}
