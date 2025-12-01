@@ -2,7 +2,7 @@ import { createSignal, createEffect } from 'solid-js';
 
 export default function FileUploaderIsland() {
   const [file, setFile] = createSignal<File | null>(null);
-  const [status, setStatus] = createSignal<string>('No file selected, xxx');
+  const [status, setStatus] = createSignal<string>('No file selected.');
   const [fileContents, setFileContents] = createSignal<string | null>(null);
   const [fileMetaData, setFileMetaData] = createSignal<{ name?: string; size?: number; type?: string } | null>(null);
 
@@ -49,16 +49,36 @@ export default function FileUploaderIsland() {
     }
   }
 
-  function handleUpload() {
+  async function handleUpload() {
     if (!file()) {
       setStatus('Please select a file first.');
       return;
     }
     setStatus(`Uploading ${file()!.name}...`);
     readUploadedFileContents();
-    setTimeout(() => {
+
+    // Prepare form data for upload
+    const formData = new FormData();
+    formData.append('file', file()!);
+
+    try {
+      // Use absolute URL to hit the FastAPI backend running on port 8000
+      const response = await fetch('http://127.0.0.1:8000/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Upload failed with status ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log('Upload response:', result);
       setStatus(`Upload complete: ${file()!.name}`);
-    }, 1000);
+    } catch (error) {
+      console.error('Upload error:', error);
+      setStatus(`Upload failed: ${error}`);
+    }
   }
 
   return (

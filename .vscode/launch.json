@@ -5,7 +5,7 @@
       "name": "Astro Dev Server",
       "type": "node",
       "request": "launch",
-      "runtimeExecutable": "bun", // or "node"
+      "runtimeExecutable": "bun",
       "args": [
         "run",
         "dev"
@@ -32,6 +32,24 @@
         "${webRoot}/**/*",
         "!**/node_modules/**"
       ]
+    },
+    {
+      "name": "Python: FastAPI",
+      "type": "python",
+      "request": "launch",
+      "module": "uvicorn",
+      "python": "${workspaceFolder}/.venv/bin/python",
+      "cwd": "${workspaceFolder}/backend",
+      "args": [
+        "main:app",
+        "--reload",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "8000"
+      ],
+      "jinja": true,
+      "console": "integratedTerminal"
     }
   ],
   "compounds": [
@@ -40,6 +58,14 @@
       "configurations": [
         "Astro Dev Server",
         "Launch Chrome (Astro)"
+      ]
+    },
+    {
+      "name": "Full Debug",
+      "configurations": [
+        "Astro Dev Server",
+        "Launch Chrome (Astro)",
+        "Python: FastAPI"
       ]
     }
   ]
