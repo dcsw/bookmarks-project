@@ -25,6 +25,7 @@ def flatten_folder(folder: BookmarkFolder, current_path: str = "") -> List[Tuple
 
     # Iterate over the mixed items array
     for item in folder.items:
+        item.folder = current_path
         if isinstance(item, BookmarkShortcut):
             flat_list.append((item, current_path))
         elif isinstance(item, BookmarkFolder):
