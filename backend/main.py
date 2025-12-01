@@ -2,8 +2,7 @@ from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import logging
-from netscape_bookmarks_parser import parse_bookmarks
-
+from bookmarkParser import parse_bookmarks
 app = FastAPI()
 
 # Configure CORS to allow all origins (adjust as needed for production)

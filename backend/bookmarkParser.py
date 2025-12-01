@@ -70,9 +70,17 @@ def parse_bookmarks(file_text: str) -> List[Dict[str, Any]]:
     result: List[Dict[str, Any]] = []
     for shortcut in shortcuts:
         result.append({
-            "title": shortcut.title,
-            "url": shortcut.url,
-            "tags": getattr(shortcut, "tags", []),
+            "title": shortcut.name,
+            "url": shortcut.href,
+            "icon_base64": shortcut.icon_base64,
+            "icon_url": shortcut.icon_url,
+            "icon_url_fake": shortcut.icon_url_fake,
+            "add_date_unix": shortcut.add_date_unix,
+            "comment": shortcut.comment,
+            "feed": shortcut.feed,
+            "last_modified_unix": shortcut.last_modified_unix,
+            "last_visit_unix": shortcut.last_visit_unix
+            # "tags": getattr(shortcut, "tags", []),
         })
 
     return result
