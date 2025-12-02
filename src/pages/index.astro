@@ -1,13 +1,14 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
-import FileUploader from '../components/FileUploader.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import FileUploaderIsland from '../components/FileUploaderIsland.tsx';
 ---
 
-<Layout>
-	<Welcome />
-	<FileUploader />
-</Layout>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bookmark Uploader</title>
+</head>
+<body>
+  <h1>Upload Your Bookmark File</h1>
+  <FileUploaderIsland />
+</body>
+</html>

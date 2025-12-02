@@ -19,6 +19,12 @@ export interface Bookmark {
 }
 
 export let bookmarks: Bookmark[] = [];
+
+// Grab the props passed from the parent component
+const { bookmarks: propsBookmarks } = Astro.props;
+if (propsBookmarks) {
+  bookmarks = propsBookmarks;
+}
 ---
 
 <style>

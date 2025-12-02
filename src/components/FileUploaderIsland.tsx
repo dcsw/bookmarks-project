@@ -1,18 +1,18 @@
-import { createSignal, createEffect } from 'solid-js';
+import { createSignal, createEffect } from "solid-js";
+import BookmarkGrid from "./BookmarkGrid.astro";
 
 export default function FileUploaderIsland() {
   const [file, setFile] = createSignal<File | null>(null);
   const [status, setStatus] = createSignal<string>('No file selected.');
   const [fileContents, setFileContents] = createSignal<string | null>(null);
   const [fileMetaData, setFileMetaData] = createSignal<{ name?: string; size?: number; type?: string } | null>(null);
+  const [bookmarks, setBookmarks] = createSignal<any[]>([]);
 
   // Log fileMetaData whenever it changes
   createEffect(() => {
     const meta = fileMetaData();
     if (meta) {
-      console.log('fileMetaData changed:', meta);
-    } else {
-      console.log('fileMetaData cleared');
+      console.log('File metadata:', meta);
     }
   });
 
@@ -26,7 +26,7 @@ export default function FileUploaderIsland() {
       console.log(result);
     };
     reader.onerror = () => {
-      console.error('Error reading file');
+      console.error('Error reading file:', reader.error);
     };
     reader.readAsText(currentFile);
   }
@@ -41,11 +41,6 @@ export default function FileUploaderIsland() {
         size: selectedFile.size,
         type: selectedFile.type,
       });
-      setStatus(`Selected: ${selectedFile.name}`);
-    } else {
-      setFile(null);
-      setFileMetaData(null);
-      setStatus('No file selected, dork');
     }
   }
 
@@ -62,19 +57,18 @@ export default function FileUploaderIsland() {
     formData.append('file', file()!);
 
     try {
-      // Use absolute URL to hit the FastAPI backend running on port 8000
-      const response = await fetch('http://127.0.0.1:8000/upload', {
+      const response = await fetch('/upload', {
         method: 'POST',
         body: formData,
       });
 
       if (!response.ok) {
-        throw new Error(`Upload failed with status ${response.status}`);
+        throw new Error(`Upload failed: ${response.statusText}`);
       }
 
-      const result = await response.json();
-      console.log('Upload response:', result);
-      setStatus(`Upload complete: ${file()!.name}`);
+      const data = await response.json();
+      setBookmarks(data.bookmarks || []);
+      setStatus(`Upload successful! ${data.bookmarks?.length ?? 0} bookmarks received.`);
     } catch (error) {
       console.error('Upload error:', error);
       setStatus(`Upload failed: ${error}`);
@@ -82,23 +76,13 @@ export default function FileUploaderIsland() {
   }
 
   return (
-    <>
-      <div class="file-uploader">
-        <input type="file" accept="*/*" onChange={handleFileChange} />
-        <button onClick={handleUpload}>Upload</button>
-        <p>{status()}</p>
-      </div>
-      <style>{`
-        .file-uploader {
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-          max-width: 300px;
-        }
-        .file-uploader input {
-          margin-bottom: 0.5rem;
-        }
-      `}</style>
-    </>
+    <div>
+      <input type="file" accept=".html" onChange={handleFileChange} />
+      <button onClick={handleUpload}>Upload</button>
+      <p>{status()}</p>
+
+      {/* Render the grid once we have bookmarks */}
+      {bookmarks().length > 0 && <BookmarkGrid bookmarks={bookmarks()} />}
+    </div>
   );
 }
