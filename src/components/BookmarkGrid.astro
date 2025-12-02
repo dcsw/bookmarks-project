@@ -18,12 +18,13 @@ export interface Bookmark {
   folder?: string;
 }
 
-export let bookmarks: Bookmark[] = [];
+// Use a different name for the exported variable to avoid shadowing
+export let bookmarkList: Bookmark[] = [];
 
 // Grab the props passed from the parent component
 const { bookmarks: propsBookmarks } = Astro.props;
 if (propsBookmarks) {
-  bookmarks = propsBookmarks;
+  bookmarkList = propsBookmarks;
 }
 ---
 
@@ -63,11 +64,11 @@ if (propsBookmarks) {
   }
 </style>
 
-{#if bookmarks.length === 0}
+{#if bookmarkList.length === 0}
   <p>No bookmarks to display.</p>
 {:else}
   <div class="grid-container">
-    {#each bookmarks as bookmark}
+    {#each bookmarkList as bookmark}
       <div class="bookmark-card">
         <a
           href={bookmark.url}
