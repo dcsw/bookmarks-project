@@ -1,19 +1,16 @@
 ---
+import HomeIsland from '../components/HomeIsland.tsx';
 import Layout from '../layouts/Layout.astro';
-import FileUploader from '../components/FileUploader.astro';
-import Grid from '../components/Grid.astro';
 ---
 
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Bookmark Uploader</title>
+  <title>Home</title>
 </head>
 <body>
 <Layout>
-    <h1>Upload Your Bookmark File</h1>
-    <FileUploader />
-    <Grid/>
+  <HomeIsland client:idle />
 </Layout>
 </body>
 </html>
