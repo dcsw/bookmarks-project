@@ -2,6 +2,7 @@
 import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
 import FileUploader from '../components/FileUploader.astro';
+import Grid from '../components/Grid.astro';
 ---
 
 <html lang="en">
@@ -11,9 +12,11 @@ import FileUploader from '../components/FileUploader.astro';
 </head>
 <body>
 <Layout>
-	<Welcome />
+  <Welcome />
   <h1>Upload Your Bookmark File</h1>
-  <FileUploader />
+  <Grid>
+    <FileUploader />
+  </Grid>
 </Layout>
 </body>
 </html>
