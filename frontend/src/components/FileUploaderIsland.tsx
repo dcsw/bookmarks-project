@@ -1,5 +1,4 @@
 import { createSignal, createEffect } from "solid-js";
-import BookmarkGrid from "./BookmarkGrid.astro";
 
 export default function FileUploaderIsland() {
   const [file, setFile] = createSignal<File | null>(null);
@@ -57,7 +56,7 @@ export default function FileUploaderIsland() {
     formData.append('file', file()!);
 
     try {
-      const response = await fetch('/upload', {
+      const response = await fetch('http://127.0.0.1:8000/upload', {
         method: 'POST',
         body: formData,
       });
@@ -80,9 +79,6 @@ export default function FileUploaderIsland() {
       <input type="file" accept=".html" onChange={handleFileChange} />
       <button onClick={handleUpload}>Upload</button>
       <p>{status()}</p>
-
-      {/* Render the grid once we have bookmarks */}
-      {bookmarks().length > 0 && <BookmarkGrid bookmarks={bookmarks()} />}
     </div>
   );
 }

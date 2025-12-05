@@ -10,7 +10,7 @@
         "run",
         "dev"
       ],
-      "cwd": "${workspaceFolder}",
+      "cwd": "${workspaceFolder}/frontend",
       "console": "integratedTerminal",
       "skipFiles": [
         "<node_internals>/**"
@@ -21,7 +21,7 @@
       "type": "chrome",
       "request": "launch",
       "url": "http://localhost:4321",
-      "webRoot": "${workspaceFolder}/src",
+      "webRoot": "${workspaceFolder}/frontend/src",
       "sourceMaps": true,
       "sourceMapPathOverrides": {
         "webpack:///./*": "${webRoot}/*",
