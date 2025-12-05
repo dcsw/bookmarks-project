@@ -1,4 +1,5 @@
 import { createSignal, createEffect } from "solid-js";
+import Grid from "./Grid.astro";
 
 export default function FileUploaderIsland() {
   const [file, setFile] = createSignal<File | null>(null);
@@ -79,6 +80,7 @@ export default function FileUploaderIsland() {
       <input type="file" accept=".html" onChange={handleFileChange} />
       <button onClick={handleUpload}>Upload</button>
       <p>{status()}</p>
+      <Grid items={bookmarks()} />
     </div>
   );
 }
