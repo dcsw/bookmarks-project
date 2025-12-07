@@ -10,7 +10,7 @@ export default function GridIsland() {
 
     // If the column name contains "date", try to format as a date
     if (key.toLowerCase().includes("date")) {
-      const date = new Date(value);
+      const date = new Date(value * 1000); // secs to msecs
       if (!isNaN(date.getTime())) {
         return new Intl.DateTimeFormat(undefined, {
           dateStyle: "medium",
