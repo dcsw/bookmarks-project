@@ -1,33 +1,33 @@
-import { JSX } from 'solid-js';
+// GridIsland.tsx
+import { useStore } from "@nanostores/solid";
+import { bookmarks } from "../stores/bookmarks";
 
-export interface Props {
-  items?: any[];
-}
+export default function GridIsland() {
+  const items = useStore(bookmarks);
 
-export default function GridIsland({ items }: Props): JSX.Element {
   return (
     <>
-      {items && items.length > 0 ? (
-        <table class="grid-table">
+      {items().length > 0 && items()[0] ? (  // ✅ Guard both length AND first item
+        <table className="grid-table">
           <thead>
             <tr>
-              {Object.keys(items[0]).map((key) => (
-                <th>{key}</th>
+              {Object.keys(items()[0]).map((key) => (
+                <th key={key}>{key}</th>  // ✅ Add key
               ))}
             </tr>
           </thead>
           <tbody>
-            {items.map((item) => (
-              <tr>
+            {items().map((item: any, index: number) => (
+              <tr key={index}>  {/* ✅ Add key */}
                 {Object.keys(item).map((key) => (
-                  <td>{item[key]}</td>
+                  <td key={key}>{item[key]}</td>  // ✅ Add key
                 ))}
               </tr>
             ))}
           </tbody>
         </table>
       ) : (
-        <slot />
+        <div>No bookmarks yet</div>  // ✅ Better empty state
       )}
     </>
   );

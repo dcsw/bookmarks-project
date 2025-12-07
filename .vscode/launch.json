@@ -1,6 +1,7 @@
 {
   "version": "0.2.0",
   "configurations": [
+    
     {
       "name": "Astro Dev Server",
       "type": "node",
@@ -25,17 +26,19 @@
       "sourceMaps": true,
       "sourceMapPathOverrides": {
         "webpack:///./*": "${webRoot}/*",
-        "webpack:////root/code/bkmk-exp/*": "${webRoot}/*",
+        "webpack:////root/code/bkmk-exp/frontend/*": "${webRoot}/*",
+        "webpack:///src/*": "${webRoot}/*",
+        "webpack:///./src/*": "${webRoot}/*",
         "*": "${webRoot}/*"
       },
       "resolveSourceMapLocations": [
-        "${webRoot}/**/*",
+        "${workspaceFolder}/**",
         "!**/node_modules/**"
       ]
     },
     {
       "name": "Python: FastAPI",
-      "type": "python",
+      "type": "debugpy",
       "request": "launch",
       "module": "uvicorn",
       "python": "${workspaceFolder}/.venv/bin/python",
@@ -70,3 +73,4 @@
     }
   ]
 }
+
