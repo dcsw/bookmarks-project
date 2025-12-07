@@ -21,7 +21,8 @@ export default function GridIsland() {
       // Try to parse as a date
       const date = new Date(value);
       if (!isNaN(date.getTime())) {
-        return new Intl.DateTimeFormat("en-US", {
+        // Use the viewer's locale for formatting
+        return new Intl.DateTimeFormat(undefined, {
           dateStyle: "medium",
         }).format(date);
       }
