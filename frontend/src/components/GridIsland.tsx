@@ -8,6 +8,20 @@ export default function GridIsland() {
   const formatValue = (key: string, value: any) => {
     if (value === null || value === undefined) return "";
 
+    // If the column name contains "icon_base64", render as an image
+    if (key.toLowerCase().includes("icon_base64")) {
+      if (typeof value === "string") {
+        // Assume PNG; adjust MIME type if needed
+        return (
+          <img
+            src={`data:image/png;base64,${value}`}
+            alt="icon"
+            style={{ maxWidth: "32px", maxHeight: "32px" }}
+          />
+        );
+      }
+    }
+
     // If the column name contains "date", try to format as a date
     if (key.toLowerCase().includes("date")) {
       const date = new Date(value * 1000); // secs to msecs
