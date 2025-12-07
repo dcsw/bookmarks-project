@@ -4,9 +4,19 @@ import { bookmarks } from "../stores/bookmarks";
 export default function GridIsland() {
   const items = useStore(bookmarks);
 
-  // Helper to format cell values based on their type
-  const formatValue = (value: any) => {
+  // Helper to format cell values based on their type and column name
+  const formatValue = (key: string, value: any) => {
     if (value === null || value === undefined) return "";
+
+    // If the column name contains "date", try to format as a date
+    if (key.toLowerCase().includes("date")) {
+      const date = new Date(value);
+      if (!isNaN(date.getTime())) {
+        return new Intl.DateTimeFormat(undefined, {
+          dateStyle: "medium",
+        }).format(date);
+      }
+    }
 
     // Boolean values
     if (typeof value === "boolean") return value ? "Yes" : "No";
@@ -18,15 +28,6 @@ export default function GridIsland() {
 
     // String values
     if (typeof value === "string") {
-      // Try to parse as a date
-      const date = new Date(value);
-      if (!isNaN(date.getTime())) {
-        // Use the viewer's locale for formatting
-        return new Intl.DateTimeFormat(undefined, {
-          dateStyle: "medium",
-        }).format(date);
-      }
-
       // Try to render URLs as links
       if (/^https?:\/\//i.test(value)) {
         return (
@@ -58,7 +59,7 @@ export default function GridIsland() {
             {items().map((item: any, index: number) => (
               <tr key={index}>
                 {Object.keys(item).map((key) => (
-                  <td key={key}>{formatValue(item[key])}</td>
+                  <td key={key}>{formatValue(key, item[key])}</td>
                 ))}
               </tr>
             ))}
