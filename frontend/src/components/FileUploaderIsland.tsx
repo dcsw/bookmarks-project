@@ -14,7 +14,7 @@ export default function FileUploaderIsland() {
     type?: string;
   } | null>(null);
   onMount(() => {
-    console.log("Setting initial pets");
+    console.log("Initializing bookmarks.");
     // bookmarks.set([
     //   { pet: "dog", sound: "woof" },
     //   { pet: "cat", sound: "meow" },

@@ -14,7 +14,7 @@ export default function GridIsland() {
         // Assume PNG; adjust MIME type if needed
         return (
           <img
-            src={`data:image/png;base64,${value}`}
+            src={`${value}`}
             alt="icon"
             style={{ maxWidth: "32px", maxHeight: "32px" }}
           />
