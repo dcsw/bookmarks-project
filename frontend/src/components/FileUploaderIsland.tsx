@@ -97,7 +97,6 @@ export default function FileUploaderIsland() {
       <input type="file" accept=".html" onChange={handleFileChange} />
       <button onClick={handleUpload}>Upload</button>
       <p>{status()}</p>
-      <GridIsland />
     </div>
   );
 }
