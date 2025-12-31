@@ -14,7 +14,7 @@ export default function FileUploaderIsland() {
   };
 
   const [file, setFile] = createSignal<File | null>(null);
-  const [status, setStatus] = createSignal<string>("");
+  const [status, setStatus] = createSignal<string>("No file selected.");
   const [fileContents, setFileContents] = createSignal<string | null>(null);
   const [fileMetaData, setFileMetaData] = createSignal<{
     name?: string;
@@ -68,6 +68,7 @@ export default function FileUploaderIsland() {
       });
       setStatus(`File ${file()!.name} selected.`);
       setLastFileName(selectedFile.name);
+      handleUpload(); // Trigger upload immediately after file selection
     }
   }
 
@@ -114,12 +115,11 @@ export default function FileUploaderIsland() {
 
   return (
     <div>
-      <input type="file" accept=".html" onChange={handleFileChange} />
-      <button onClick={handleUpload}>Upload</button>
-      <p>{status()}</p>
       <Show when={hydrated()} >
         <p>Last uploaded file: {lastFileName() || "No file uploaded yet"}</p>
       </Show>
+      <input type="file" accept=".html" onChange={handleFileChange} />
+      <p>{status()}</p>
     </div>
   );
 }
