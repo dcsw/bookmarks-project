@@ -1,7 +1,7 @@
 import { onMount } from "solid-js";
 import { bookmarks } from "../stores/bookmarks";
 import { createSignal, createEffect } from "solid-js";
-import { fileHistory, FileHistoryItem } from "../stores/fileHistory";
+import { fileHistory } from "../stores/fileHistory";
 import { createStore } from "solid-js/store";
 
 export default function FileUploaderIsland() {
@@ -25,7 +25,9 @@ export default function FileUploaderIsland() {
     type?: string;
   } | null>(null);
 
-  const [localFileHistory, setLocalFileHistory] = createStore(fileHistory.get());
+  const [localFileHistory, setLocalFileHistory] = createStore(
+    fileHistory.get()
+  );
 
   onMount(() => {
     // console.log("Initializing bookmarks.");
