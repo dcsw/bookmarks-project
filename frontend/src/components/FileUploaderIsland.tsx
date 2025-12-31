@@ -1,6 +1,6 @@
 import { onMount } from "solid-js";
 import { bookmarks } from "../stores/bookmarks";
-import { createSignal, createEffect } from "solid-js";
+import { createSignal, createEffect, Show } from "solid-js";
 import { fileHistory } from "../stores/fileHistory";
 import { createStore } from "solid-js/store";
 
@@ -14,7 +14,7 @@ export default function FileUploaderIsland() {
   };
 
   const [file, setFile] = createSignal<File | null>(null);
-  const [status, setStatus] = createSignal<string>("No file selected.");
+  const [status, setStatus] = createSignal<string>("");
   const [fileContents, setFileContents] = createSignal<string | null>(null);
   const [fileMetaData, setFileMetaData] = createSignal<{
     name?: string;
@@ -23,14 +23,14 @@ export default function FileUploaderIsland() {
   } | null>(null);
 
   const [lastFileName, setLastFileName] = createSignal<string | null>(initialFileName());
+  const [hydrated, setHydrated] = createSignal(false);
+
+  const [localFileHistory, setLocalFileHistory] = createStore(
+    fileHistory.get()
+  );
 
   onMount(() => {
-    // console.log("Initializing bookmarks.");
-    // bookmarks.set([
-    //   { pet: "dog", sound: "woof" },
-    //   { pet: "cat", sound: "meow" },
-    //   { pet: "fish", movement: "swish" },
-    // ]);
+    setHydrated(true);
   });
 
   // Log fileMetaData whenever it changes
@@ -114,10 +114,12 @@ export default function FileUploaderIsland() {
 
   return (
     <div>
-      <p>Last uploaded file: {lastFileName() || "No file uploaded yet"}</p>
       <input type="file" accept=".html" onChange={handleFileChange} />
       <button onClick={handleUpload}>Upload</button>
       <p>{status()}</p>
+      <Show when={hydrated()} >
+        <p>Last uploaded file: {lastFileName() || "No file uploaded yet"}</p>
+      </Show>
     </div>
   );
 }
