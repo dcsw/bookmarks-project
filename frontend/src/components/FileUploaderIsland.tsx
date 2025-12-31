@@ -5,18 +5,15 @@ import { fileHistory } from "../stores/fileHistory";
 import { createStore } from "solid-js/store";
 
 export default function FileUploaderIsland() {
-  const initialFile = () => {
+  const initialFileName = () => {
     const history = fileHistory.get();
     if (history && history.length > 0) {
-      const lastFile = history[history.length - 1];
-      // Attempt to reconstruct the File object from the stored data.
-      // This might not be fully accurate depending on what's stored in FileHistoryItem.
-      return new File([], lastFile.filename); // You might need more info than just filename
+      return history[history.length - 1].filename;
     }
-    return null;
+    return "";
   };
 
-  const [file, setFile] = createSignal<File | null>(initialFile());
+  const [file, setFile] = createSignal<File | null>(null);
   const [status, setStatus] = createSignal<string>("No file selected.");
   const [fileContents, setFileContents] = createSignal<string | null>(null);
   const [fileMetaData, setFileMetaData] = createSignal<{
@@ -24,6 +21,8 @@ export default function FileUploaderIsland() {
     size?: number;
     type?: string;
   } | null>(null);
+
+  const [fileName, setFileName] = createSignal<string>(initialFileName());
 
   const [localFileHistory, setLocalFileHistory] = createStore(
     fileHistory.get()
@@ -72,6 +71,7 @@ export default function FileUploaderIsland() {
         type: selectedFile.type,
       });
       setStatus(`File ${file()!.name} selected.`);
+      setFileName(selectedFile.name);
     }
   }
 
@@ -101,7 +101,7 @@ export default function FileUploaderIsland() {
       bookmarks.set(data.bookmarks || []);
 
       // Update file history
-      const newFileHistoryItem: FileHistoryItem = {
+      const newFileHistoryItem: { filename: string; lastUsed: string } = {
         filename: file()!.name,
         lastUsed: new Date().toISOString(),
       };
@@ -118,7 +118,12 @@ export default function FileUploaderIsland() {
 
   return (
     <div>
-      <input type="file" accept=".html" onChange={handleFileChange} />
+      <input
+        type="file"
+        accept=".html"
+        onChange={handleFileChange}
+        value={fileName()}
+      />
       <button onClick={handleUpload}>Upload</button>
       <p>{status()}</p>
     </div>
