@@ -1,30 +1,35 @@
+import { createSignal, onMount, Show } from "solid-js";
 import { useStore } from "@nanostores/solid";
 import { bookmarks } from "../stores/bookmarks";
 
 export default function GridIsland() {
   const items = useStore(bookmarks);
+  const [hydrated, setHydrated] = createSignal(false);
 
-  // Helper to format cell values based on their type and column name
+  onMount(() => {
+    setHydrated(true);
+  });
+
+  const safeItems = () => (Array.isArray(items()) ? items() : []);
+
   const formatValue = (key: string, value: any) => {
     if (value === null || value === undefined) return "";
 
-    // If the column name contains "icon_base64", render as an image
-    if (key.toLowerCase().includes("icon_base64")) {
-      if (typeof value === "string") {
-        // Assume PNG; adjust MIME type if needed
-        return (
-          <img
-            src={`${value}`}
-            alt="icon"
-            style={{ maxWidth: "32px", maxHeight: "32px" }}
-          />
-        );
-      }
+    if (
+      key.toLowerCase().includes("icon_base64") &&
+      typeof value === "string"
+    ) {
+      return (
+        <img
+          src={value}
+          alt="icon"
+          style={{ maxWidth: "32px", maxHeight: "32px" }}
+        />
+      );
     }
 
-    // If the column name contains "date", try to format as a date
     if (key.toLowerCase().includes("date")) {
-      const date = new Date(value * 1000); // secs to msecs
+      const date = new Date(value * 1000);
       if (!isNaN(date.getTime())) {
         return new Intl.DateTimeFormat(undefined, {
           dateStyle: "medium",
@@ -32,17 +37,13 @@ export default function GridIsland() {
       }
     }
 
-    // Boolean values
     if (typeof value === "boolean") return value ? "Yes" : "No";
 
-    // Number values
     if (typeof value === "number") {
       return new Intl.NumberFormat().format(value);
     }
 
-    // String values
     if (typeof value === "string") {
-      // Try to render URLs as links
       if (/^https?:\/\//i.test(value)) {
         return (
           <a href={value} target="_blank" rel="noopener noreferrer">
@@ -54,26 +55,25 @@ export default function GridIsland() {
       return value;
     }
 
-    // Fallback for other types
     return String(value);
   };
 
   return (
-    <>
-      {items().length > 0 && items()[0] ? (
+    <Show when={hydrated()} fallback={<div>No bookmarks yet</div>}>
+      {safeItems().length > 0 && safeItems()[0] ? (
         <table className="grid-table">
           <thead>
             <tr>
-              {Object.keys(items()[0]).map((key) => (
-                <th key={key}>{key}</th>
+              {Object.keys(safeItems()[0]).map((key, index) => (
+                <th key={key + index}>{key}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {items().map((item: any, index: number) => (
+            {safeItems().map((item, index) => (
               <tr key={index}>
-                {Object.keys(item).map((key) => (
-                  <td key={key}>{formatValue(key, item[key])}</td>
+                {Object.keys(item).map((key2) => (
+                  <td key={key2}>{formatValue(key2, item[key2])}</td>
                 ))}
               </tr>
             ))}
@@ -82,6 +82,6 @@ export default function GridIsland() {
       ) : (
         <div>No bookmarks yet</div>
       )}
-    </>
+    </Show>
   );
 }

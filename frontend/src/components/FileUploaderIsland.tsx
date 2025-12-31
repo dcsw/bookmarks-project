@@ -1,8 +1,6 @@
 import { onMount } from "solid-js";
-import { useStore } from "@nanostores/solid";
 import { bookmarks } from "../stores/bookmarks";
 import { createSignal, createEffect } from "solid-js";
-import GridIsland from "./GridIsland";
 
 export default function FileUploaderIsland() {
   const [file, setFile] = createSignal<File | null>(null);
@@ -14,7 +12,7 @@ export default function FileUploaderIsland() {
     type?: string;
   } | null>(null);
   onMount(() => {
-    console.log("Initializing bookmarks.");
+    // console.log("Initializing bookmarks.");
     // bookmarks.set([
     //   { pet: "dog", sound: "woof" },
     //   { pet: "cat", sound: "meow" },
@@ -37,7 +35,7 @@ export default function FileUploaderIsland() {
     reader.onload = () => {
       const result = reader.result as string;
       setFileContents(result);
-      console.log(result);
+      // console.log(result);
     };
     reader.onerror = () => {
       console.error("Error reading file:", reader.error);

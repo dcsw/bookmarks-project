@@ -12,8 +12,8 @@ import Grid from '../components/Grid.astro'
 <body>
 <Layout>
     <h1>Upload Your Bookmark File</h1>
-    <FileUploader />
-    <Grid/>
+    <FileUploader client:load/>
+    <Grid client:load/>
 </Layout>
 </body>
 </html>
