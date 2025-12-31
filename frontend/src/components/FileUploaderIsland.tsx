@@ -10,7 +10,7 @@ export default function FileUploaderIsland() {
     if (history && history.length > 0) {
       return history[history.length - 1].filename;
     }
-    return "";
+    return null;
   };
 
   const [file, setFile] = createSignal<File | null>(null);
@@ -22,7 +22,7 @@ export default function FileUploaderIsland() {
     type?: string;
   } | null>(null);
 
-  const [fileName, setFileName] = createSignal<string>(initialFileName());
+  const [lastFileName, setLastFileName] = createSignal<string | null>(initialFileName());
 
   const [localFileHistory, setLocalFileHistory] = createStore(
     fileHistory.get()
@@ -71,7 +71,7 @@ export default function FileUploaderIsland() {
         type: selectedFile.type,
       });
       setStatus(`File ${file()!.name} selected.`);
-      setFileName(selectedFile.name);
+      setLastFileName(selectedFile.name);
     }
   }
 
@@ -118,12 +118,8 @@ export default function FileUploaderIsland() {
 
   return (
     <div>
-      <input
-        type="file"
-        accept=".html"
-        onChange={handleFileChange}
-        value={fileName()}
-      />
+      <p>Last uploaded file: {lastFileName() || "No file uploaded yet"}</p>
+      <input type="file" accept=".html" onChange={handleFileChange} />
       <button onClick={handleUpload}>Upload</button>
       <p>{status()}</p>
     </div>
