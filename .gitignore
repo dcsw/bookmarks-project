@@ -25,3 +25,5 @@ pnpm-debug.log*
 .aider*
 
 backend/__pycache__/main.cpython-312.pyc
+backend/__pycache__/bookmarkParser.cpython-310.pyc
+backend/__pycache__/**
