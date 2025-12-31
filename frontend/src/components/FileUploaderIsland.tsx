@@ -1,9 +1,22 @@
 import { onMount } from "solid-js";
 import { bookmarks } from "../stores/bookmarks";
 import { createSignal, createEffect } from "solid-js";
+import { fileHistory, FileHistoryItem } from "../stores/fileHistory";
+import { createStore } from "solid-js/store";
 
 export default function FileUploaderIsland() {
-  const [file, setFile] = createSignal<File | null>(null);
+  const initialFile = () => {
+    const history = fileHistory.get();
+    if (history && history.length > 0) {
+      const lastFile = history[history.length - 1];
+      // Attempt to reconstruct the File object from the stored data.
+      // This might not be fully accurate depending on what's stored in FileHistoryItem.
+      return new File([], lastFile.filename); // You might need more info than just filename
+    }
+    return null;
+  };
+
+  const [file, setFile] = createSignal<File | null>(initialFile());
   const [status, setStatus] = createSignal<string>("No file selected.");
   const [fileContents, setFileContents] = createSignal<string | null>(null);
   const [fileMetaData, setFileMetaData] = createSignal<{
@@ -11,6 +24,9 @@ export default function FileUploaderIsland() {
     size?: number;
     type?: string;
   } | null>(null);
+
+  const [localFileHistory, setLocalFileHistory] = createStore(fileHistory.get());
+
   onMount(() => {
     // console.log("Initializing bookmarks.");
     // bookmarks.set([
@@ -81,6 +97,14 @@ export default function FileUploaderIsland() {
 
       const data = await response.json();
       bookmarks.set(data.bookmarks || []);
+
+      // Update file history
+      const newFileHistoryItem: FileHistoryItem = {
+        filename: file()!.name,
+        lastUsed: new Date().toISOString(),
+      };
+
+      fileHistory.set([...fileHistory.get(), newFileHistoryItem]);
       setStatus(
         `Upload successful! ${data.bookmarks?.length ?? 0} bookmarks received.`
       );
