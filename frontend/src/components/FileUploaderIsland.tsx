@@ -24,10 +24,6 @@ export default function FileUploaderIsland() {
 
   const [lastFileName, setLastFileName] = createSignal<string | null>(initialFileName());
 
-  const [localFileHistory, setLocalFileHistory] = createStore(
-    fileHistory.get()
-  );
-
   onMount(() => {
     // console.log("Initializing bookmarks.");
     // bookmarks.set([
