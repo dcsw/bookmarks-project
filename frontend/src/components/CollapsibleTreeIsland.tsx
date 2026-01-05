@@ -11,6 +11,7 @@ export default function CollapsibleTreeIsland() {
   const [rootNode, setRootNode] = createSignal<any>(null);
   const [treeData, setTreeData] = createSignal<any>(null);
   const [i, setI] = createSignal(0);
+  const [root, setRoot] = createSignal<any>(null);
 
   onMount(() => {
     setHydrated(true);
@@ -18,7 +19,7 @@ export default function CollapsibleTreeIsland() {
     const width = 960;
     const margin = { top: 20, right: 90, bottom: 30, left: 90 };
 
-    const root = {
+    const rootObj = {
       name: "Root",
       children: [
         { name: "Child 1" },
@@ -44,9 +45,10 @@ export default function CollapsibleTreeIsland() {
         }
       ]
     };
+    setRoot(rootObj);
 
     const treemap = d3.tree().size([height() - margin.top - margin.bottom, width - margin.left - margin.right]);
-    const hierarchy = d3.hierarchy(root);
+    const hierarchy = d3.hierarchy(root());
     setRootHierarchy(hierarchy);
     const tree = treemap(hierarchy);
     setTreeData(tree);
