@@ -1,6 +1,6 @@
-import { onMount } from "solid-js";
+import { defineComponent, onMount } from 'astro:comp';
 
-export default function CollapsibleTreeIsland({
+export default CollapsibleTreeIsland({
   name: 'CollapsibleTreeIsland',
   setup() {
     onMount(() => {
