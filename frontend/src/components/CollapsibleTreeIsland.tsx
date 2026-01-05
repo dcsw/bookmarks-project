@@ -1,8 +1,6 @@
-import { defineComponent, onMount } from 'astro:comp';
+import { createSignal, onMount, Show } from "solid-js";
 
-export default CollapsibleTreeIsland({
-  name: 'CollapsibleTreeIsland',
-  setup() {
+export default function CollapsibleTreeIsland() {
     onMount(() => {
       const width = 960;
       const height = 500;
@@ -163,5 +161,5 @@ export default CollapsibleTreeIsland({
         .duration(750)
         .style('fill-opacity', 1);
     });
-  }
-});
+  
+};
