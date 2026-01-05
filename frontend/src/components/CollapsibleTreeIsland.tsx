@@ -4,29 +4,11 @@ import { bookmarks } from "../stores/bookmarks";
 import * as d3 from "d3";
 
 export default function CollapsibleTreeIsland() {
-  onMount(() => {
+  const [hydrated, setHydrated] = createSignal(false);
+
     const width = 960;
     const height = 500;
     const margin = { top: 20, right: 90, bottom: 30, left: 90 };
-
-    // Create SVG container
-    const svg = d3.select("#tree-svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-      .attr("transform", `translate(${margin.left},${margin.top})`);
-
-    // Tooltip
-    const tooltip = d3.select("body").append("div")
-      .attr("class", "tooltip")
-      .style("position", "absolute")
-      .style("pointer-events", "none")
-      .style("background", "lightyellow")
-      .style("padding", "6px")
-      .style("border", "1px solid #ddd")
-      .style("border-radius", "4px")
-      .style("font", "12px sans-serif")
-      .style("opacity", 0);
 
     // Hierarchical data
     const root = {
@@ -55,6 +37,27 @@ export default function CollapsibleTreeIsland() {
         }
       ]
     };
+  onMount(() => {
+    setHydrated(true);
+
+    // Create SVG container
+    const svg = d3.select("#tree-svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    // Tooltip
+    const tooltip = d3.select("body").append("div")
+      .attr("class", "tooltip")
+      .style("position", "absolute")
+      .style("pointer-events", "none")
+      .style("background", "lightyellow")
+      .style("padding", "6px")
+      .style("border", "1px solid #ddd")
+      .style("border-radius", "4px")
+      .style("font", "12px sans-serif")
+      .style("opacity", 0);
 
     // Tree layout
     const treemap = d3.tree().size([height - margin.top - margin.bottom, width - margin.left - margin.right]);
@@ -66,6 +69,7 @@ export default function CollapsibleTreeIsland() {
       return `M ${s.y} ${s.x} C ${(s.y + d.y) / 2} ${s.x}, ${(s.y + d.y) / 2} ${d.x}, ${d.y} ${d.x}`;
     }
 
+  })
     // Click to collapse/expand
     function click(event, d) {
       if (d.children) {
@@ -197,7 +201,6 @@ export default function CollapsibleTreeIsland() {
     root.x0 = height / 2;
     root.y0 = 0;
     update(root);
-  });
 
   return (
     <Show when={hydrated()} fallback={<div>Loading…</div>}>
