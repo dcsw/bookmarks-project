@@ -6,6 +6,9 @@ import * as d3 from "d3";
 export default function CollapsibleTreeIsland() {
   const items = useStore(bookmarks);
   const [hydrated, setHydrated] = createSignal(false);
+  const [height] = createSignal(500);
+  const [rootHierarchy, setRootHierarchy] = createSignal<any>(null);
+  const [rootNode, setRootNode] = createSignal<any>(null);
   const [treeData, setTreeData] = createSignal<any>(null);
   const [i, setI] = createSignal(0);
 
@@ -13,7 +16,6 @@ export default function CollapsibleTreeIsland() {
     setHydrated(true);
 
     const width = 960;
-    const height = 500;
     const margin = { top: 20, right: 90, bottom: 30, left: 90 };
 
     const root = {
@@ -43,14 +45,16 @@ export default function CollapsibleTreeIsland() {
       ]
     };
 
-    const treemap = d3.tree().size([height - margin.top - margin.bottom, width - margin.left - margin.right]);
-    const rootHierarchy = d3.hierarchy(root);
-    const tree = treemap(rootHierarchy);
+    const treemap = d3.tree().size([height() - margin.top - margin.bottom, width - margin.left - margin.right]);
+    const hierarchy = d3.hierarchy(root);
+    setRootHierarchy(hierarchy);
+    const tree = treemap(hierarchy);
     setTreeData(tree);
+    setRootNode(hierarchy.descendants()[0]);
 
     const svg = d3.select("#tree-svg")
       .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
+      .attr("height", height() + margin.top + margin.bottom)
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
@@ -77,7 +81,6 @@ export default function CollapsibleTreeIsland() {
         d.children = d._children;
         d._children = null;
       }
-      // Simple re‑update; in a full implementation you would recompute the layout here.
       update(d);
     }
 
@@ -185,11 +188,10 @@ export default function CollapsibleTreeIsland() {
     }
 
     // Initial setup
-    const rootNode = treeData()?.descendants()[0];
-    if (rootNode) {
-      rootNode.x0 = height / 2;
-      rootNode.y0 = 0;
-      update(rootNode);
+    if (rootNode()) {
+      rootNode().x0 = height() / 2;
+      rootNode().y0 = 0;
+      update(rootNode());
     }
   });
 
