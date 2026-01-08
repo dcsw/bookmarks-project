@@ -189,18 +189,22 @@ export default function CollapsibleTreeIsland() {
   onMount(() => {
     setHydrated(true);
 
-    // Create SVG container inside the div#tree-svg
+    // Ensure the target container exists
     const container = document.getElementById("tree-svg");
     if (!container) return;
 
-    const svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svgElement.setAttribute("width", width + margin.left + margin.right);
-    svgElement.setAttribute("height", height + margin.top + margin.bottom);
-    svgElement.setAttribute("id", "svg-container");
-    container.appendChild(svgElement);
+    // Bind the SVG element inside #tree-svg directly
+    svg = d3.select(container);
 
-    // Store reference for later selections
-    svg = d3.select(svgElement);
+    // If the SVG element does not exist, create it
+    if (svg.node() == null) {
+      const svgNS = "http://www.w3.org/2000/svg";
+      const svgElement = document.createElementNS(svgNS, "svg");
+      svgElement.setAttribute("width", width + margin.left + margin.right);
+      svgElement.setAttribute("height", height + margin.top + margin.bottom);
+      container.appendChild(svgElement);
+      svg = d3.select(svgElement);
+    }
 
     // Tooltip
     tooltip = d3
