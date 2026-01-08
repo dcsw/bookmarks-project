@@ -6,7 +6,7 @@ export default function SimpleIsland() {
   let index = 0;
 
   onMount(() => {
-    const timer = d3.timer(() => {
+    const timer = d3.interval(() => {
       index = (index + 1) % colors.length;
       const svg = document.querySelector('svg');
       if (svg) {
@@ -15,7 +15,7 @@ export default function SimpleIsland() {
           circle.setAttribute('fill', colors[index]);
         }
       }
-    });
+    }, 1000); // 1000 ms interval
     return () => timer.stop();
   });
 
