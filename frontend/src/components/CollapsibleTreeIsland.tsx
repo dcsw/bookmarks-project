@@ -20,10 +20,7 @@ export default function CollapsibleTreeIsland() {
       { name: "Child 1" },
       {
         name: "Child 2",
-        children: [
-          { name: "Grandchild 1" },
-          { name: "Grandchild 2" }
-        ]
+        children: [{ name: "Grandchild 1" }, { name: "Grandchild 2" }],
       },
       {
         name: "Child 3",
@@ -33,12 +30,12 @@ export default function CollapsibleTreeIsland() {
             name: "Grandchild 4",
             children: [
               { name: "Great-Grandchild 1" },
-              { name: "Great-Grandchild 2" }
-            ]
-          }
-        ]
-      }
-    ]
+              { name: "Great-Grandchild 2" },
+            ],
+          },
+        ],
+      },
+    ],
   };
 
   // Create hierarchy and tree layout
@@ -67,7 +64,9 @@ export default function CollapsibleTreeIsland() {
         svgElement.setAttribute("height", height + margin.top + margin.bottom);
         svgElement.setAttribute(
           "viewBox",
-          `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`
+          `0 0 ${width + margin.left + margin.right} ${
+            height + margin.top + margin.bottom
+          }`
         );
         svgElement.style.setProperty("display", "block");
         container.appendChild(svgElement);
@@ -128,7 +127,9 @@ export default function CollapsibleTreeIsland() {
     nodes.forEach((d: any) => (d.y = d.depth * dy + margin.top));
 
     // ----- Links -----
-    const link = svg.selectAll("path.link").data(links, (d: any) => d.target.id);
+    const link = svg
+      .selectAll("path.link")
+      .data(links, (d: any) => d.target.id);
 
     link
       .enter()
@@ -151,7 +152,9 @@ export default function CollapsibleTreeIsland() {
     link.exit().remove();
 
     // ----- Nodes -----
-    const node = svg.selectAll("g.node").data(nodes, (d: any) => d.id || (d.id = ++source.i));
+    const node = svg
+      .selectAll("g.node")
+      .data(nodes, (d: any) => d.id || (d.id = ++source.i));
 
     const nodeEnter = node
       .enter()
@@ -162,10 +165,7 @@ export default function CollapsibleTreeIsland() {
         click(event, d);
       })
       .on("mouseover", (event, d: any) => {
-        tooltip
-          .transition()
-          .duration(200)
-          .style("opacity", 0.9);
+        tooltip.transition().duration(200).style("opacity", 0.9);
         tooltip
           .html(d.data.name)
           .style("left", event.pageX + 10 + "px")
@@ -210,7 +210,8 @@ export default function CollapsibleTreeIsland() {
     nodeUpdate.select("text").style("fill-opacity", 1);
 
     // Exit nodes
-    const nodeExit = node.exit()
+    const nodeExit = node
+      .exit()
       .transition()
       .duration(750)
       .attr("transform", (d: any) => `translate(${source.y},${source.x})`)
@@ -238,7 +239,11 @@ export default function CollapsibleTreeIsland() {
   return (
     <Show when={hydrated()} fallback={<div>Loading…</div>}>
       <div id="tree-svg">
-        <svg></svg>
+        <svg
+          width={width}
+          height={height}
+          // style="border:1px solid #ccc; display:block; margin:0 auto;"
+        />
       </div>
     </Show>
   );
