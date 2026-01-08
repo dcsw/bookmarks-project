@@ -20,7 +20,7 @@ export default function SimpleIsland() {
   });
 
   return (
-    <svg
+    <svg id="tree-svg"
       width="200"
       height="200"
       style="border:1px solid #ccc; display:block; margin:0 auto;"
