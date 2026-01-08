@@ -46,6 +46,13 @@ export default function CollapsibleTreeIsland() {
     .x((d: any) => d.y)
     .y((d: any) => d.x);
 
+  // Helper to create a curved diagonal path
+  function makeDiagonal(s: any, d: any): string {
+    const pathX = (s.x + d.x) / 2;
+    const pathY = (s.y + d.y) / 2;
+    return `M ${s.y} ${s.x} C ${pathX} ${s.x}, ${pathX} ${d.x}, ${d.y} ${d.x}`;
+  }
+
   onMount(() => {
     setHydrated(true);
 
@@ -127,27 +134,22 @@ export default function CollapsibleTreeIsland() {
     nodes.forEach((d: any) => (d.y = d.depth * dy + margin.top));
 
     // ----- Links -----
-    const link = svg
-      .selectAll("path.link")
-      .data(links, (d: any) => d.target.id);
+    const link = svg.selectAll("path.link").data(links, (d: any) => d.target.id);
 
     link
       .enter()
       .append("path")
       .attr("class", "link")
-      .attr("d", (d: any) => {
-        const o = { x: source.x0, y: source.y0 };
-        return diagonal({ source: o, target: o });
-      })
       .attr("fill", "none")
       .attr("stroke", "#555")
       .attr("stroke-opacity", 0.6)
-      .attr("stroke-width", 1.5);
+      .attr("stroke-width", 1.5)
+      .attr("d", (d: any) => makeDiagonal(d, d.parent));
 
     link
       .transition()
       .duration(750)
-      .attr("d", (d: any) => diagonal(d));
+      .attr("d", (d: any) => makeDiagonal(d, d.parent));
 
     link.exit().remove();
 
@@ -165,7 +167,10 @@ export default function CollapsibleTreeIsland() {
         click(event, d);
       })
       .on("mouseover", (event, d: any) => {
-        tooltip.transition().duration(200).style("opacity", 0.9);
+        tooltip
+          .transition()
+          .duration(200)
+          .style("opacity", 0.9);
         tooltip
           .html(d.data.name)
           .style("left", event.pageX + 10 + "px")
