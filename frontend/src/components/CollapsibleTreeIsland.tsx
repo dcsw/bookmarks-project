@@ -5,7 +5,7 @@ export default function CollapsibleTreeIsland() {
   const [hydrated, setHydrated] = createSignal(false);
   let svg: d3.Selection<SVGSVGElement, unknown, null, undefined>;
   let tooltip: d3.Selection<HTMLElement, unknown, null, undefined>;
-  const circleSize = createSignal(6); // state var for circle radius
+  const [circleSize] = createSignal(12); // state var for circle radius
 
   const width = 928;
   const height = 500;
