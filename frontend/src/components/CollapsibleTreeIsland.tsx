@@ -4,22 +4,15 @@ import { bookmarks } from "../stores/bookmarks";
 import * as d3 from "d3";
 
 export default function CollapsibleTreeIsland() {
-  const items = useStore(bookmarks);
   const [hydrated, setHydrated] = createSignal(false);
-  const [height] = createSignal(500);
-  const [rootHierarchy, setRootHierarchy] = createSignal<any>(null);
-  const [rootNode, setRootNode] = createSignal<any>(null);
-  const [treeData, setTreeData] = createSignal<any>(null);
-  const [i, setI] = createSignal(0);
-  const [root, setRoot] = createSignal<any>(null);
-
-  onMount(() => {
-    setHydrated(true);
-
+  let svg  = null, tooltip = null;
     const width = 960;
+    const height = 500;
     const margin = { top: 20, right: 90, bottom: 30, left: 90 };
+    const circleRadius = 15;
 
-    const rootObj = {
+    // Hierarchical data
+    const root = {
       name: "Root",
       children: [
         { name: "Child 1" },
@@ -45,22 +38,19 @@ export default function CollapsibleTreeIsland() {
         }
       ]
     };
-    setRoot(rootObj);
 
-    const treemap = d3.tree().size([height() - margin.top - margin.bottom, width - margin.left - margin.right]);
-    const hierarchy = d3.hierarchy(root());
-    setRootHierarchy(hierarchy);
-    const tree = treemap(hierarchy);
-    setTreeData(tree);
-    setRootNode(hierarchy.descendants()[0]);
 
-    const svg = d3.select("#tree-svg")
+  onMount(() => {
+    setHydrated(true);
+    // Create SVG container
+    svg = d3.select("#tree-svg")
       .attr("width", width + margin.left + margin.right)
-      .attr("height", height() + margin.top + margin.bottom)
+      .attr("height", height + margin.top + margin.bottom)
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    const tooltip = d3.select("body").append("div")
+    // Tooltip
+    tooltip = d3.select("body").append("div")
       .attr("class", "tooltip")
       .style("position", "absolute")
       .style("pointer-events", "none")
@@ -71,10 +61,23 @@ export default function CollapsibleTreeIsland() {
       .style("font", "12px sans-serif")
       .style("opacity", 0);
 
+    // Initial setup
+    let i = 0;
+    root.x0 = height / 2;
+    root.y0 = 0;
+    update(root);
+  })
+    // Tree layout
+    const treemap = d3.tree().size([height - margin.top - margin.bottom, width - margin.left - margin.right]);
+    const rootHierarchy = d3.hierarchy(root);
+    const treeData = treemap(rootHierarchy);
+
+    // Helper to create diagonal links
     function diagonal(s, d) {
       return `M ${s.y} ${s.x} C ${(s.y + d.y) / 2} ${s.x}, ${(s.y + d.y) / 2} ${d.x}, ${d.y} ${d.x}`;
     }
 
+    // Click to collapse/expand
     function click(event, d) {
       if (d.children) {
         d._children = d.children;
@@ -86,16 +89,19 @@ export default function CollapsibleTreeIsland() {
       update(d);
     }
 
+    // Update function
     function update(source) {
-      const nodes = treeData()?.descendants() ?? [];
+      const nodes = treeData.descendants();
       const links = nodes.slice(1);
 
+      // Set depth y positions
       nodes.forEach(d => { d.y = d.depth * 180; });
 
-      const node = d3.select("#tree-svg").selectAll("g.node")
+      // Bind nodes
+      const node = svg.selectAll("node")
         .data(nodes, d => d.id || (d.id = ++i));
 
-      const nodeEnter = node.enter().append("g")
+      const nodeEnter = node.enter().append("node")
         .attr("class", "node")
         .attr("transform", d => `translate(${source.y0},${source.x0})`)
         .on("click", click)
@@ -113,12 +119,14 @@ export default function CollapsibleTreeIsland() {
             .style("opacity", 0);
         });
 
+      // Append circle
       nodeEnter.append("circle")
-        .attr("r", 1e-6)
+        .attr("r", circleRadius)
         .style("fill", d => (d._children ? "lightsteelblue" : "#fff"))
         .style("stroke", "#ccc")
         .style("stroke-width", "3px");
 
+      // Append text
       const text = nodeEnter.append("text")
         .attr("dy", ".35em")
         .attr("x", d => (d.children || d._children) ? -13 : 13)
@@ -146,18 +154,22 @@ export default function CollapsibleTreeIsland() {
           };
         });
 
-      const nodeUpdate = node.enter().merge(node);
+      // Merge enter and update selections
+      const nodeUpdate = nodeEnter.merge(node);
       nodeUpdate.transition()
         .duration(750)
         .attr("transform", d => `translate(${d.y},${d.x})`);
 
+      // Update circle radius and fill
       nodeUpdate.select("circle")
         .attr("r", 8)
         .style("fill", d => (d._children ? "lightsteelblue" : "#fff"));
 
+      // Update text visibility
       nodeUpdate.select("text")
         .style("fill-opacity", 1);
 
+      // Handle exit
       const nodeExit = node.exit().transition()
         .duration(750)
         .attr("transform", d => `translate(${source.y},${source.x})`)
@@ -166,7 +178,8 @@ export default function CollapsibleTreeIsland() {
       nodeExit.select("circle").attr("r", 1e-6);
       nodeExit.select("text").style("fill-opacity", 1e-6);
 
-      const link = d3.select("#tree-svg").selectAll("path.link")
+      // Links
+      const link = svg.selectAll("path.link")
         .data(links, d => d.target.id);
 
       const linkEnter = link.enter().insert("path", "g")
@@ -183,19 +196,12 @@ export default function CollapsibleTreeIsland() {
         .attr("d", d => diagonal({x: d.source.x0, y: d.source.y0}, {x: d.source.x0, y: d.source.y0}))
         .remove();
 
+      // Save positions for transition back
       nodes.forEach(d => {
         d.x0 = d.x;
         d.y0 = d.y;
       });
     }
-
-    // Initial setup
-    if (rootNode()) {
-      rootNode().x0 = height() / 2;
-      rootNode().y0 = 0;
-      update(rootNode());
-    }
-  });
 
   return (
     <Show when={hydrated()} fallback={<div>Loading…</div>}>
