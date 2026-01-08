@@ -5,6 +5,7 @@ export default function CollapsibleTreeIsland() {
   const [hydrated, setHydrated] = createSignal(false);
   let svg: d3.Selection<SVGSVGElement, unknown, null, undefined>;
   let tooltip: d3.Selection<HTMLElement, unknown, null, undefined>;
+  const circleSize = createSignal(6); // state var for circle radius
 
   const width = 928;
   const height = 500;
@@ -177,7 +178,7 @@ export default function CollapsibleTreeIsland() {
     // Circle for each node
     nodeEnter
       .append("circle")
-      .attr("r", 6)
+      .attr("r", circleSize())
       .style("fill", (d: any) => (d._children ? "#555" : "#999"))
       .style("stroke", "#fff")
       .style("stroke-width", 3);
@@ -202,7 +203,7 @@ export default function CollapsibleTreeIsland() {
     // Update circle fill/color after transition
     nodeUpdate
       .select("circle")
-      .attr("r", 6)
+      .attr("r", circleSize())
       .style("fill", (d: any) => (d._children ? "#555" : "#999"));
 
     // Update text visibility
