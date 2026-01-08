@@ -1,6 +1,10 @@
 ---
+import Layout from '../layouts/Layout.astro';
+import FileUploader from '../components/FileUploader.astro';
+import Grid from '../components/Grid.astro';
+import CollapsibleTree from '../components/CollapsibleTree.astro';
 // Home page – renders the SimpleIsland component
-import SimpleIsland from '../components/SimpleIsland';
+import SimpleD3Viz from '../components/SimpleD3Viz.astro';
 
 ---
 
@@ -15,7 +19,7 @@ import SimpleIsland from '../components/SimpleIsland';
     <!-- <FileUploader client:load/> -->
     <!-- <Grid client:load/> -->
     <!-- <CollapsibleTree client:load/> -->
-    <SimpleIsland client:load />
+    <SimpleD3Viz client:load />
 </Layout>
 </body>
 </html>
