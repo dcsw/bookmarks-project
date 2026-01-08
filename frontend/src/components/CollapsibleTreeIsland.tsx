@@ -7,6 +7,7 @@ export default function CollapsibleTreeIsland() {
   let tooltip: d3.Selection<HTMLElement, unknown, null, undefined>;
 
   const width = 928;
+  const height = 500;
   const margin = { top: 10, right: 10, bottom: 10, left: 40 };
   const dx = 10; // vertical separation between nodes
   const dy = 150; // horizontal separation between nodes
@@ -56,17 +57,31 @@ export default function CollapsibleTreeIsland() {
     if (!svgElement) {
       const svgNS = "http://www.w3.org/2000/svg";
       svgElement = document.createElementNS(svgNS, "svg");
+      // Set explicit dimensions and make sure it is displayed
+      svgElement.setAttribute("width", width + margin.left + margin.right);
+      svgElement.setAttribute("height", height + margin.top + margin.bottom);
+      svgElement.setAttribute(
+        "viewBox",
+        `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`
+      );
+      svgElement.style.setProperty("display", "block");
       container.appendChild(svgElement);
     }
     svg = d3.select(svgElement);
 
     // Set initial SVG attributes
-    svg.attr("width", width)
+    svg
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
       .style("font", "10px sans-serif")
-      .style("user-select", "none");
+      .style("user-select", "none")
+      .style("display", "block")
+      .style("margin", "0 auto")
+      .style("border", "1px solid #ccc");
 
-    // Create tooltip
-    tooltip = d3.select("body")
+    // Create tooltip for hover info
+    tooltip = d3
+      .select("body")
       .append("div")
       .style("position", "absolute")
       .style("pointer-events", "none")
@@ -78,60 +93,75 @@ export default function CollapsibleTreeIsland() {
       .style("opacity", 0);
 
     // Initialize root position and start update
-    root.x0 = margin.top;
-    root.eachBefore(d => {
+    root.x0 = height / 2;
+    root.eachBefore((d: any) => {
       d.x0 = d.x;
       d.y0 = d.y;
     });
     update(root);
   });
 
-  function update(source: any) {
-    const nodes = tree(root)!.descendants();
-    const links = tree(root)!.links();
+  // Collapse internal nodes
+  function collapse(d: any) {
+    if (d.children) {
+      d._children = d.children;
+      d._children.forEach(collapse);
+      d.children = null;
+    }
+  }
 
-    // Compute required height and update viewBox
-    const height = nodes.length * dy + margin.top + margin.bottom;
-    svg.attr("height", height)
-      .attr("viewBox", `-${margin.left} -${margin.top} ${width} ${height}`);
+  // Update diagram with new layout
+  function update(source: any) {
+    // Compute new tree layout
+    const rootLayout = d3.hierarchy(data);
+    const treeLayout = tree(rootLayout);
+    const nodes = treeLayout.descendants();
+    const links = treeLayout.links();
+
+    // Normalize depths for fixed vertical spacing
+    nodes.forEach((d: any) => (d.y = d.depth * dy + margin.top));
 
     // ----- Links -----
-    const link = svg.selectAll("path.link")
-      .data(links, (d: any) => d.target.id);
+    const link = svg.selectAll("path.link").data(links, (d: any) => d.target.id);
 
-    link.enter()
+    link
+      .enter()
       .append("path")
       .attr("class", "link")
       .attr("d", (d: any) => {
-        const o = {x: source.x0, y: source.y0};
-        return diagonal({source: o, target: o});
+        const o = { x: source.x0, y: source.y0 };
+        return diagonal({ source: o, target: o });
       })
       .attr("fill", "none")
       .attr("stroke", "#555")
-      .attr("stroke-opacity", 0.4)
+      .attr("stroke-opacity", 0.6)
       .attr("stroke-width", 1.5);
 
-    link.transition()
+    link
+      .transition()
       .duration(750)
-      .attr("d", diagonal);
+      .attr("d", (d: any) => diagonal(d));
 
     link.exit().remove();
 
     // ----- Nodes -----
-    const node = svg.selectAll("g.node")
-      .data(nodes, (d: any) => d.id || (d.id = ++source.i));
+    const node = svg.selectAll("g.node").data(nodes, (d: any) => d.id || (d.id = ++source.i));
 
-    const nodeEnter = node.enter()
+    const nodeEnter = node
+      .enter()
       .append("g")
       .attr("class", "node")
-      .attr("transform", d => `translate(${d.y0},${d.x0})`)
+      .attr("transform", (d: any) => `translate(${d.y0},${d.x0})`)
       .on("click", (event, d: any) => {
-        d.children = d.children ? null : d._children;
-        update(d);
+        click(event, d);
       })
       .on("mouseover", (event, d: any) => {
-        tooltip.transition().duration(200).style("opacity", 0.9);
-        tooltip.html(d.data.name)
+        tooltip
+          .transition()
+          .duration(200)
+          .style("opacity", 0.9);
+        tooltip
+          .html(d.data.name)
           .style("left", event.pageX + 10 + "px")
           .style("top", event.pageY - 28 + "px");
       })
@@ -140,32 +170,44 @@ export default function CollapsibleTreeIsland() {
       });
 
     // Circle for each node
-    nodeEnter.append("circle")
+    nodeEnter
+      .append("circle")
       .attr("r", 6)
-      .style("fill", d => d._children ? "#555" : "#999")
+      .style("fill", (d: any) => (d._children ? "#555" : "#999"))
       .style("stroke", "#fff")
       .style("stroke-width", 3);
 
     // Text label for each node
-    nodeEnter.append("text")
+    nodeEnter
+      .append("text")
       .attr("dy", 4)
-      .attr("x", d => d._children ? -6 : 6)
-      .attr("text-anchor", d => d._children ? "end" : "start")
-      .text(d => d.data.name)
+      .attr("x", (d: any) => (d._children ? -6 : 6))
+      .attr("text-anchor", (d: any) => (d._children ? "end" : "start"))
+      .text((d: any) => d.data.name)
       .style("fill", "#555")
       .style("pointer-events", "none");
 
     // Merge updates with transition
     const nodeUpdate = node.merge(nodeEnter);
-    nodeUpdate.transition()
+    nodeUpdate
+      .transition()
       .duration(750)
-      .attr("transform", d => `translate(${d.y},${d.x})`);
+      .attr("transform", (d: any) => `translate(${d.y},${d.x})`);
+
+    // Update circle fill/color after transition
+    nodeUpdate
+      .select("circle")
+      .attr("r", 6)
+      .style("fill", (d: any) => (d._children ? "#555" : "#999"));
+
+    // Update text visibility
+    nodeUpdate.select("text").style("fill-opacity", 1);
 
     // Exit nodes
     const nodeExit = node.exit()
       .transition()
       .duration(750)
-      .attr("transform", d => `translate(${source.y},${source.x})`)
+      .attr("transform", (d: any) => `translate(${source.y},${source.x})`)
       .remove();
 
     // Save current positions for transition back
@@ -173,6 +215,18 @@ export default function CollapsibleTreeIsland() {
       d.x0 = d.x;
       d.y0 = d.y;
     });
+  }
+
+  // Toggle children on click
+  function click(event: any, d: any) {
+    if (d.children) {
+      d._children = d.children;
+      d.children = null;
+    } else {
+      d.children = d._children;
+      d._children = null;
+    }
+    update(d);
   }
 
   return (
