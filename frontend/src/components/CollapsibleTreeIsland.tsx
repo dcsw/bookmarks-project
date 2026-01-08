@@ -5,7 +5,7 @@ export default function CollapsibleTreeIsland() {
   const [hydrated, setHydrated] = createSignal(false);
   let svg: d3.Selection<SVGSVGElement, unknown, null, undefined>;
   let tooltip: d3.Selection<HTMLElement, unknown, null, undefined>;
-  const [circleSize] = createSignal(12); // state var for circle radius
+  const circleSize = createSignal(12); // state var for circle radius
 
   const width = 928;
   const height = 500;
@@ -64,9 +64,7 @@ export default function CollapsibleTreeIsland() {
         svgElement.setAttribute("height", height + margin.top + margin.bottom);
         svgElement.setAttribute(
           "viewBox",
-          `0 0 ${width + margin.left + margin.right} ${
-            height + margin.top + margin.bottom
-          }`
+          `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`
         );
         svgElement.style.setProperty("display", "block");
         container.appendChild(svgElement);
@@ -97,7 +95,9 @@ export default function CollapsibleTreeIsland() {
         .style("opacity", 0);
 
       // Initialize root position and start update
-      root.x0 = height / 2;
+      const totalContentHeight = height - margin.top - margin.bottom;
+      root.x0 = totalContentHeight / 2; // center vertically within the content area
+      root.y0 = 0;
       root.eachBefore((d: any) => {
         d.x0 = d.x;
         d.y0 = d.y;
@@ -210,8 +210,7 @@ export default function CollapsibleTreeIsland() {
     nodeUpdate.select("text").style("fill-opacity", 1);
 
     // Exit nodes
-    const nodeExit = node
-      .exit()
+    const nodeExit = node.exit()
       .transition()
       .duration(750)
       .attr("transform", (d: any) => `translate(${source.y},${source.x})`)
@@ -239,11 +238,7 @@ export default function CollapsibleTreeIsland() {
   return (
     <Show when={hydrated()} fallback={<div>Loading…</div>}>
       <div id="tree-svg">
-        <svg
-          width={width}
-          height={height}
-          // style="border:1px solid #ccc; display:block; margin:0 auto;"
-        />
+        <svg></svg>
       </div>
     </Show>
   );
