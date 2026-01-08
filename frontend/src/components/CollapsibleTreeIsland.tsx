@@ -236,7 +236,9 @@ export default function CollapsibleTreeIsland() {
 
   return (
     <Show when={hydrated()} fallback={<div>Loading…</div>}>
-      <div id="tree-svg" />
+      <div id="tree-svg">
+        <svg></svg>
+      </div>
     </Show>
   );
 }
