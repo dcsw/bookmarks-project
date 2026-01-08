@@ -19,7 +19,10 @@ export default function CollapsibleTreeIsland() {
       { name: "Child 1" },
       {
         name: "Child 2",
-        children: [{ name: "Grandchild 1" }, { name: "Grandchild 2" }],
+        children: [
+          { name: "Grandchild 1" },
+          { name: "Grandchild 2" }
+        ]
       },
       {
         name: "Child 3",
@@ -29,12 +32,12 @@ export default function CollapsibleTreeIsland() {
             name: "Grandchild 4",
             children: [
               { name: "Great-Grandchild 1" },
-              { name: "Great-Grandchild 2" },
-            ],
-          },
-        ],
-      },
-    ],
+              { name: "Great-Grandchild 2" }
+            ]
+          }
+        ]
+      }
+    ]
   };
 
   // Create hierarchy and tree layout
@@ -48,59 +51,59 @@ export default function CollapsibleTreeIsland() {
   onMount(() => {
     setHydrated(true);
 
-    // Ensure the container exists
-    const container = document.getElementById("tree-svg");
-    if (!container) return;
+    // Wait a tick to ensure the #tree-svg element is added to the DOM
+    Promise.resolve().then(() => {
+      const container = document.getElementById("tree-svg");
+      if (!container) return;
 
-    // Create SVG element if it doesn't exist yet
-    let svgElement = container.querySelector("svg");
-    if (!svgElement) {
-      const svgNS = "http://www.w3.org/2000/svg";
-      svgElement = document.createElementNS(svgNS, "svg");
-      // Set explicit dimensions and make sure it is displayed
-      svgElement.setAttribute("width", width + margin.left + margin.right);
-      svgElement.setAttribute("height", height + margin.top + margin.bottom);
-      svgElement.setAttribute(
-        "viewBox",
-        `0 0 ${width + margin.left + margin.right} ${
-          height + margin.top + margin.bottom
-        }`
-      );
-      svgElement.style.setProperty("display", "block");
-      container.appendChild(svgElement);
-    }
-    svg = d3.select(svgElement);
+      // Create SVG element if it doesn't exist yet
+      let svgElement = container.querySelector("svg");
+      if (!svgElement) {
+        const svgNS = "http://www.w3.org/2000/svg";
+        svgElement = document.createElementNS(svgNS, "svg");
+        // Set explicit dimensions and make sure it is displayed
+        svgElement.setAttribute("width", width + margin.left + margin.right);
+        svgElement.setAttribute("height", height + margin.top + margin.bottom);
+        svgElement.setAttribute(
+          "viewBox",
+          `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`
+        );
+        svgElement.style.setProperty("display", "block");
+        container.appendChild(svgElement);
+      }
+      svg = d3.select(svgElement);
 
-    // Set initial SVG attributes
-    svg
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-      .style("font", "10px sans-serif")
-      .style("user-select", "none")
-      .style("display", "block")
-      .style("margin", "0 auto")
-      .style("border", "1px solid #ccc");
+      // Set initial SVG attributes
+      svg
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .style("font", "10px sans-serif")
+        .style("user-select", "none")
+        .style("display", "block")
+        .style("margin", "0 auto")
+        .style("border", "1px solid #ccc");
 
-    // Create tooltip for hover info
-    tooltip = d3
-      .select("body")
-      .append("div")
-      .style("position", "absolute")
-      .style("pointer-events", "none")
-      .style("background", "lightyellow")
-      .style("padding", "6px")
-      .style("border", "1px solid #ddd")
-      .style("border-radius", "4px")
-      .style("font", "12px sans-serif")
-      .style("opacity", 0);
+      // Create tooltip for hover info
+      tooltip = d3
+        .select("body")
+        .append("div")
+        .style("position", "absolute")
+        .style("pointer-events", "none")
+        .style("background", "lightyellow")
+        .style("padding", "6px")
+        .style("border", "1px solid #ddd")
+        .style("border-radius", "4px")
+        .style("font", "12px sans-serif")
+        .style("opacity", 0);
 
-    // Initialize root position and start update
-    root.x0 = height / 2;
-    root.eachBefore((d: any) => {
-      d.x0 = d.x;
-      d.y0 = d.y;
+      // Initialize root position and start update
+      root.x0 = height / 2;
+      root.eachBefore((d: any) => {
+        d.x0 = d.x;
+        d.y0 = d.y;
+      });
+      update(root);
     });
-    update(root);
   });
 
   // Collapse internal nodes
@@ -124,9 +127,7 @@ export default function CollapsibleTreeIsland() {
     nodes.forEach((d: any) => (d.y = d.depth * dy + margin.top));
 
     // ----- Links -----
-    const link = svg
-      .selectAll("path.link")
-      .data(links, (d: any) => d.target.id);
+    const link = svg.selectAll("path.link").data(links, (d: any) => d.target.id);
 
     link
       .enter()
@@ -149,9 +150,7 @@ export default function CollapsibleTreeIsland() {
     link.exit().remove();
 
     // ----- Nodes -----
-    const node = svg
-      .selectAll("g.node")
-      .data(nodes, (d: any) => d.id || (d.id = ++source.i));
+    const node = svg.selectAll("g.node").data(nodes, (d: any) => d.id || (d.id = ++source.i));
 
     const nodeEnter = node
       .enter()
@@ -162,7 +161,10 @@ export default function CollapsibleTreeIsland() {
         click(event, d);
       })
       .on("mouseover", (event, d: any) => {
-        tooltip.transition().duration(200).style("opacity", 0.9);
+        tooltip
+          .transition()
+          .duration(200)
+          .style("opacity", 0.9);
         tooltip
           .html(d.data.name)
           .style("left", event.pageX + 10 + "px")
@@ -207,8 +209,7 @@ export default function CollapsibleTreeIsland() {
     nodeUpdate.select("text").style("fill-opacity", 1);
 
     // Exit nodes
-    const nodeExit = node
-      .exit()
+    const nodeExit = node.exit()
       .transition()
       .duration(750)
       .attr("transform", (d: any) => `translate(${source.y},${source.x})`)
@@ -235,7 +236,7 @@ export default function CollapsibleTreeIsland() {
 
   return (
     <Show when={hydrated()} fallback={<div>Loading…</div>}>
-      <div id="tree-svg"><svg></svg></div>
+      <div id="tree-svg" />
     </Show>
   );
 }
