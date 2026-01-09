@@ -190,7 +190,7 @@ export default function CollapsibleTreeIsland() {
     nodeUpdate
       .transition()
       .duration(750)
-      .attr("transform", (d: any) => `translate(${d.x},${d.y})`);
+      .attr("transform", (d: any) => `translate(${d.y},${d.x})`);
 
     // Update circle fill/color after transition
     nodeUpdate
@@ -205,7 +205,7 @@ export default function CollapsibleTreeIsland() {
     const nodeExit = node.exit()
       .transition()
       .duration(750)
-      .attr("transform", (d: any) => `translate(${source.x},${source.y})`)
+      .attr("transform", (d: any) => `translate(${source.y},${source.x})`)
       .remove();
 
     // Save current positions for transition back
