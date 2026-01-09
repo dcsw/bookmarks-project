@@ -10,14 +10,14 @@ export default function CollapsibleTreeIsland() {
   const width = 928;
   const height = 500;
   const margin = { top: 10, right: 10, bottom: 10, left: 40 };
-  const dx = 10; // vertical separation between nodes
-  const dy = 150; // horizontal separation between nodes
+  const dy = 100; // vertical separation between nodes
+  const dx = 150; // horizontal separation between nodes
 
   // Sample hierarchical data
   const data = {
     name: "Root",
     children: [
-      { name: "Child 1" },
+      { name: "Child 1"},
       {
         name: "Child 2",
         children: [{ name: "Grandchild 1" }, { name: "Grandchild 2" }],
@@ -63,19 +63,6 @@ export default function CollapsibleTreeIsland() {
 
       // Create SVG element if it doesn't exist yet
       let svgElement = container.querySelector("svg");
-      if (!svgElement) {
-        const svgNS = "http://www.w3.org/2000/svg";
-        svgElement = document.createElementNS(svgNS, "svg");
-        // Set explicit dimensions and make sure it is displayed
-        svgElement.setAttribute("width", width + margin.left + margin.right);
-        svgElement.setAttribute("height", height + margin.top + margin.bottom);
-        svgElement.setAttribute(
-          "viewBox",
-          `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`
-        );
-        svgElement.style.setProperty("display", "block");
-        container.appendChild(svgElement);
-      }
       svg = d3.select(svgElement);
 
       // Set initial SVG attributes
@@ -102,13 +89,13 @@ export default function CollapsibleTreeIsland() {
         .style("opacity", 0);
 
       // Initialize root position and start update
+      root.x0 = margin.left;
       const totalContentHeight = height - margin.top - margin.bottom;
-      root.x0 = totalContentHeight / 2; // center vertically within the content area
-      root.y0 = 0;
-      root.eachBefore((d: any) => {
-        d.x0 = d.x;
-        d.y0 = d.y;
-      });
+      root.y0 = totalContentHeight / 2; // center vertically within the content area
+      // root.eachBefore((d: any) => {
+      //   d.x0 = d.x;
+      //   d.y0 = d.y;
+      // });
       update(root);
     });
   });
@@ -131,7 +118,7 @@ export default function CollapsibleTreeIsland() {
     const links = treeLayout.links();
 
     // Normalize depths for fixed vertical spacing
-    nodes.forEach((d: any) => (d.y = d.depth * dy + margin.top));
+    nodes.forEach((d: any) => (d.y = d.depth * dx + margin.top));
 
     // ----- Links -----
     const link = svg.selectAll("path.link").data(links, (d: any) => d.target.id);
@@ -162,7 +149,7 @@ export default function CollapsibleTreeIsland() {
       .enter()
       .append("g")
       .attr("class", "node")
-      .attr("transform", (d: any) => `translate(${d.y0},${d.x0})`)
+      .attr("transform", (d: any) => `translate(${d.x0},${d.y0})`)
       .on("click", (event, d: any) => {
         click(event, d);
       })
@@ -191,7 +178,7 @@ export default function CollapsibleTreeIsland() {
     // Text label for each node
     nodeEnter
       .append("text")
-      .attr("dy", 4)
+      .attr("dx", 4)
       .attr("x", (d: any) => (d._children ? -6 : 6))
       .attr("text-anchor", (d: any) => (d._children ? "end" : "start"))
       .text((d: any) => d.data.name)
@@ -203,7 +190,7 @@ export default function CollapsibleTreeIsland() {
     nodeUpdate
       .transition()
       .duration(750)
-      .attr("transform", (d: any) => `translate(${d.y},${d.x})`);
+      .attr("transform", (d: any) => `translate(${d.x},${d.y})`);
 
     // Update circle fill/color after transition
     nodeUpdate
@@ -218,7 +205,7 @@ export default function CollapsibleTreeIsland() {
     const nodeExit = node.exit()
       .transition()
       .duration(750)
-      .attr("transform", (d: any) => `translate(${source.y},${source.x})`)
+      .attr("transform", (d: any) => `translate(${source.x},${source.y})`)
       .remove();
 
     // Save current positions for transition back
