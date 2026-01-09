@@ -5,7 +5,7 @@ export default function CollapsibleTreeIsland() {
   const [hydrated, setHydrated] = createSignal(false);
   let svg: d3.Selection<SVGSVGElement, unknown, null, undefined>;
   let tooltip: d3.Selection<HTMLElement, unknown, null, undefined>;
-  const circleSize = createSignal(12); // state var for circle radius
+  const [circleSize] = createSignal(12); // state var for circle radius
 
   const width = 928;
   const height = 500;
@@ -144,12 +144,12 @@ export default function CollapsibleTreeIsland() {
       .attr("stroke", "#555")
       .attr("stroke-opacity", 0.6)
       .attr("stroke-width", 1.5)
-      .attr("d", (d: any) => makeDiagonal(d, d.parent));
+      .attr("d", (d: any) => makeDiagonal(d.source, d.target));
 
     link
       .transition()
       .duration(750)
-      .attr("d", (d: any) => makeDiagonal(d, d.parent));
+      .attr("d", (d: any) => makeDiagonal(d.source, d.target));
 
     link.exit().remove();
 
